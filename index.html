@@ -905,6 +905,134 @@ footer span { color:var(--violet2); }
   .scroll-cue { left: 2rem; }
 }
 @media (prefers-reduced-motion:reduce) { .fade-up { transition:none; } * { animation-duration: 0.01ms !important; } }
+
+/* ════════════════════════════════════════════════════════════════
+   NEW ANIMATIONS — added on top of existing styles
+   (fade-up scroll reveal & hero particle drift already exist above
+   and are left untouched; this block only ADDS new effects)
+   ════════════════════════════════════════════════════════════════ */
+
+/* ─── 9. SCROLL PROGRESS BAR ─── */
+#scrollProgressBar {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%; z-index: 10000;
+  background: linear-gradient(90deg, var(--violet) 0%, var(--violet2) 45%, var(--teal) 100%);
+  box-shadow: 0 0 12px rgba(124,108,255,0.55), 0 0 4px rgba(45,232,176,0.4);
+  transition: width 0.12s linear;
+  pointer-events: none;
+}
+
+/* ─── 6. CUSTOM CURSOR GLOW ─── */
+#cursorGlow {
+  position: fixed; top: 0; left: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(124,108,255,0.55) 0%, rgba(124,108,255,0.18) 45%, transparent 75%);
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease, transform 0.12s ease-out;
+  opacity: 0;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+#cursorGlow.active { opacity: 1; }
+#cursorGlow.cursor-pop { transform: translate(-50%, -50%) scale(1.6); }
+@media (hover: none), (pointer: coarse) { #cursorGlow { display: none; } }
+
+/* ─── 2 & 10. TYPEWRITER + TEXT WIPE REVEAL (hero name) ─── */
+.hero-name .line1, .hero-name .line2 {
+  position: relative;
+  display: block;
+}
+/* Curtain wipe: a violet→teal bar that sweeps left-to-right across each line
+   right as its letters finish typing, then disappears off the right edge */
+.hero-name .line1::after,
+.hero-name .line2::after {
+  content: '';
+  position: absolute; top: 0; left: 0; height: 100%; width: 0;
+  background: linear-gradient(90deg, var(--violet) 0%, var(--teal) 100%);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.hero-name.anim-ready .line1.wipe-active::after,
+.hero-name.anim-ready .line2.wipe-active::after {
+  animation: curtainWipe 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes curtainWipe {
+  0%   { left: 0;    width: 0;    opacity: 0.85; }
+  55%  { left: 0;    width: 100%; opacity: 0.85; }
+  100% { left: 100%; width: 0;    opacity: 0; }
+}
+.hero-name .typed-cursor {
+  display: inline-block;
+  width: 2px;
+  margin-left: 2px;
+  background: var(--violet2);
+  animation: blinkCursor 0.85s steps(1) infinite;
+}
+.hero-name .line2 .typed-cursor { background: var(--violet2); }
+@keyframes blinkCursor { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+/* ─── 3. STAGGERED CARD ENTRANCE (project cards + achievement cells) ─── */
+.proj-card.stagger-init, .achieve-cell.stagger-init {
+  opacity: 0;
+  transform: translateY(24px) scale(0.97);
+}
+.proj-card.stagger-in, .achieve-cell.stagger-in {
+  animation: staggerRise 0.7s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes staggerRise {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── 4. 3D CARD TILT (project cards) ─── */
+.proj-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: background 0.25s, transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s;
+}
+.proj-card.tilting { transition: box-shadow 0.25s; }
+.proj-card .proj-tilt-shine {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.08) 0%, transparent 55%);
+  opacity: 0; transition: opacity 0.3s; z-index: 1;
+}
+.proj-card:hover .proj-tilt-shine { opacity: 1; }
+
+/* ─── 5. SKILL TAG SHIMMER ─── */
+.stag {
+  position: relative;
+  overflow: hidden;
+}
+.stag::before {
+  content: '';
+  position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+  background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.0) 20%, rgba(255,255,255,0.35) 50%, rgba(45,232,176,0.25) 60%, transparent 80%);
+  transform: skewX(-20deg);
+  transition: left 0.65s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+}
+.stag:hover::before { left: 130%; }
+
+/* ─── 7. ANIMATED NUMBER COUNTERS ─── */
+.stat-num { font-variant-numeric: tabular-nums; }
+.stat-num .count-suffix { font-style: italic; }
+
+/* ─── 12. FLOATING ACHIEVEMENT CARDS ─── */
+.achieve-cell {
+  animation: achieveFloat 4.5s ease-in-out infinite;
+  animation-play-state: paused;
+}
+.achieve-cell.float-active { animation-play-state: running; }
+@keyframes achieveFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* ─── REDUCED MOTION OVERRIDE (applies to all new + existing animation) ─── */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  .hero-name .line1::after, .hero-name .line2::after { display: none !important; }
+  .proj-card.stagger-init, .achieve-cell.stagger-init { opacity: 1 !important; transform: none !important; }
+  #cursorGlow { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -1227,6 +1355,199 @@ form.addEventListener('submit', async (e) => {
     btn.textContent = 'Send Message →'; btn.disabled = false;
   }
 });
+</script>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   NEW ANIMATIONS JS — added on top of existing behavior
+   (existing fade-up observer & particle spawner above are untouched)
+   ════════════════════════════════════════════════════════════════ */
+(function () {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ─── 9. SCROLL PROGRESS BAR ─── */
+  const progressBar = document.createElement('div');
+  progressBar.id = 'scrollProgressBar';
+  document.body.appendChild(progressBar);
+  function updateScrollProgress() {
+    const h = document.documentElement;
+    const scrollTop = h.scrollTop || document.body.scrollTop;
+    const scrollHeight = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
+    const pct = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateScrollProgress, { passive: true });
+  window.addEventListener('resize', updateScrollProgress);
+  updateScrollProgress();
+
+  /* ─── 6. CUSTOM CURSOR GLOW ─── */
+  if (!prefersReduced && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const glow = document.createElement('div');
+    glow.id = 'cursorGlow';
+    document.body.appendChild(glow);
+    let gx = 0, gy = 0, cx = 0, cy = 0;
+    window.addEventListener('mousemove', (e) => {
+      gx = e.clientX; gy = e.clientY;
+      glow.classList.add('active');
+    }, { passive: true });
+    window.addEventListener('mousedown', () => glow.classList.add('cursor-pop'));
+    window.addEventListener('mouseup', () => glow.classList.remove('cursor-pop'));
+    document.addEventListener('mouseleave', () => glow.classList.remove('active'));
+    function rafGlow() {
+      cx += (gx - cx) * 0.18;
+      cy += (gy - cy) * 0.18;
+      glow.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+      requestAnimationFrame(rafGlow);
+    }
+    requestAnimationFrame(rafGlow);
+  }
+
+  /* ─── 2 & 10. TYPEWRITER + TEXT WIPE REVEAL ON HERO NAME ─── */
+  const heroNameEl = document.querySelector('.hero-name');
+  const line1El = document.querySelector('.hero-name .line1');
+  const line2El = document.querySelector('.hero-name .line2');
+  if (heroNameEl && line1El && line2El) {
+    const word1 = line1El.textContent;
+    const word2 = line2El.textContent;
+
+    if (prefersReduced) {
+      // Leave text/content fully intact, skip motion entirely
+    } else {
+      heroNameEl.classList.add('anim-ready');
+      line1El.textContent = '';
+      line2El.textContent = '';
+
+      function typeWord(el, word, speed, onDone) {
+        let i = 0;
+        const cursor = document.createElement('span');
+        cursor.className = 'typed-cursor';
+        function step() {
+          if (i <= word.length) {
+            el.textContent = word.slice(0, i);
+            el.appendChild(cursor);
+            i++;
+            setTimeout(step, speed);
+          } else {
+            cursor.remove();
+            el.classList.add('wipe-active');
+            if (onDone) onDone();
+          }
+        }
+        step();
+      }
+
+      function startTyping() {
+        // Force the hero name visible right away — the typewriter itself is the reveal,
+        // independent of the loader's own timing.
+        heroNameEl.style.opacity = '1';
+        heroNameEl.style.transform = 'none';
+        heroNameEl.style.animation = 'none';
+        typeWord(line1El, word1, 90, () => {
+          setTimeout(() => typeWord(line2El, word2, 90), 120);
+        });
+      }
+
+      // This site shows #website only after its own loader finishes (~7s timeout
+      // elsewhere on the page). Start typing shortly after that handoff so the
+      // hero name is actually on screen and visible while it types.
+      const loaderEl = document.getElementById('loader');
+      if (loaderEl) {
+        let started = false;
+        const fire = () => { if (!started) { started = true; setTimeout(startTyping, 300); } };
+        const loaderWatcher = new MutationObserver(() => {
+          if (loaderEl.style.display === 'none') { fire(); loaderWatcher.disconnect(); }
+        });
+        loaderWatcher.observe(loaderEl, { attributes: true, attributeFilter: ['style'] });
+        // Fallback in case the observer is missed for any reason
+        setTimeout(fire, 7500);
+      } else {
+        setTimeout(startTyping, 300);
+      }
+    }
+  }
+
+  /* ─── 3. STAGGERED CARD ENTRANCE (project cards + achievement cells) ─── */
+  const staggerGroups = [document.querySelectorAll('.proj-card'), document.querySelectorAll('.achieve-cell')];
+  staggerGroups.forEach((group) => {
+    if (!group.length) return;
+    group.forEach((card) => { if (!prefersReduced) card.classList.add('stagger-init'); });
+    const staggerObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const siblings = Array.from(group);
+          const idx = siblings.indexOf(entry.target);
+          setTimeout(() => {
+            entry.target.classList.add('stagger-in');
+            entry.target.classList.add('float-active'); // enables gentle float (anim #12) once revealed
+          }, idx * 100); // 0.1s stagger delay
+          staggerObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    group.forEach((card) => staggerObserver.observe(card));
+  });
+
+  /* ─── 4. 3D CARD TILT ON HOVER (project cards) ─── */
+  if (!prefersReduced && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    document.querySelectorAll('.proj-card').forEach((card) => {
+      const shine = document.createElement('div');
+      shine.className = 'proj-tilt-shine';
+      card.appendChild(shine);
+
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
+        const tiltX = (py - 0.5) * -10;
+        const tiltY = (px - 0.5) * 10;
+        card.style.transform = `perspective(900px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(-4px) scale(1.015)`;
+        shine.style.setProperty('--mx', (px * 100) + '%');
+        shine.style.setProperty('--my', (py * 100) + '%');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+
+  /* ─── 7. ANIMATED NUMBER COUNTERS (.stat-num) ─── */
+  const statNums = document.querySelectorAll('.stat-num');
+  if (statNums.length) {
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const raw = el.textContent.trim();
+        const match = raw.match(/^(\d+)(\D*)$/); // leading number + optional suffix like "+"
+        counterObserver.unobserve(el);
+        if (!match) return; // non-numeric values left untouched
+        const target = parseInt(match[1], 10);
+        const suffix = match[2] || '';
+        if (prefersReduced) {
+          el.textContent = target + suffix;
+          return;
+        }
+        const duration = 1400;
+        const startTime = performance.now();
+        function tick(now) {
+          const progress = Math.min((now - startTime) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3); // cubic ease-out
+          const val = Math.round(target * eased);
+          el.textContent = val + suffix;
+          if (progress < 1) requestAnimationFrame(tick);
+          else el.textContent = target + suffix;
+        }
+        requestAnimationFrame(tick);
+      });
+    }, { threshold: 0.4 });
+    statNums.forEach((el) => counterObserver.observe(el));
+  }
+
+  /* ─── 12. FLOATING ACHIEVEMENT CARDS (staggered delays) ─── */
+  document.querySelectorAll('.achieve-cell').forEach((cell, i) => {
+    cell.style.animationDelay = (i * 0.18) + 's';
+  });
+})();
 </script>
 </body>
 </html>
