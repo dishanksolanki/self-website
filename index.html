@@ -1,5 +1,3 @@
-<!-- test 3 -->
-<!-- test 3 hello is  hi -->
 <div id="loader">
        <!DOCTYPE html>
 <html lang="en">
@@ -1584,3 +1582,149 @@ form.addEventListener('submit', async (e) => {
     </script>
 
 </body>
+<!-- ======================================================
+     GSAP ANIMATIONS — paste this right before </body>
+     ====================================================== -->
+
+<!-- GSAP + ScrollTrigger CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ── 1. PAGE LOAD: terminal boot-up sequence ─────────────────
+     Staggers in all the sidebar panels (SYS STATUS, NETWORK IO,
+     BUILD INFO) and the main content so it feels like a terminal
+     booting up. Targets your existing classes/IDs.                */
+  const bootTl = gsap.timeline({ defaults: { ease: "power2.out" } });
+
+  // Fade + slide in every top-level section on load
+  bootTl
+    .from("body > *", {
+      opacity: 0,
+      y: -18,
+      stagger: 0.12,
+      duration: 0.55,
+    });
+
+
+  /* ── 2. BINARY RAIN: make those binary columns scroll upward ──
+     Gives them a slow infinite upward drift so they feel "live".  */
+  gsap.utils.toArray(".binary-col, [class*='binary']").forEach((col, i) => {
+    gsap.to(col, {
+      y: "-=40",
+      duration: 2.8 + i * 0.3,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+  });
+
+  /* ── 3. GLITCH EFFECT on your name / main heading ────────────
+     Applies a horizontal glitch jitter on the h1/name element.   */
+  const heading = document.querySelector("h1, .name, [class*='name']");
+  if (heading) {
+    gsap.to(heading, {
+      x: () => Math.random() * 4 - 2,   // ±2 px jitter
+      skewX: () => Math.random() * 1 - 0.5,
+      duration: 0.08,
+      repeat: -1,
+      repeatRefresh: true,               // re-evaluate on every repeat
+      ease: "none",
+      repeatDelay: 3,                    // glitch every ~3 s
+    });
+  }
+
+
+  /* ── 4. STATS COUNTER: animate numbers in the sidebar ────────
+     Counts each numeric value up from 0 so they feel live.
+     Targets any element whose text is a number (like "98.2",
+     "4.7", "2.3", "12", "3.1.4" etc.)                           */
+  document.querySelectorAll(".stat-value, [class*='stat'], [class*='value']")
+    .forEach(el => {
+      const original = el.textContent.trim();
+      const num = parseFloat(original);
+      if (!isNaN(num)) {
+        const obj = { val: 0 };
+        gsap.to(obj, {
+          val: num,
+          duration: 1.8,
+          ease: "power1.out",
+          delay: 0.6,
+          onUpdate() {
+            // preserve original formatting (%, ms, etc.)
+            el.textContent = original.replace(
+              /[\d.]+/,
+              obj.val.toFixed(original.includes(".") ? 1 : 0)
+            );
+          },
+        });
+      }
+    });
+
+
+  /* ── 5. PANEL HOVER GLOW ─────────────────────────────────────
+     On hover each info panel (the boxes with ◈ headers) subtly
+     brightens and adds a slight scale, reinforcing the UI feel.  */
+  document.querySelectorAll(
+    ".panel, .card, .box, [class*='panel'], [class*='card'], section"
+  ).forEach(panel => {
+    panel.addEventListener("mouseenter", () => {
+      gsap.to(panel, {
+        scale: 1.012,
+        boxShadow: "0 0 18px rgba(0,255,180,0.25)",
+        duration: 0.25,
+      });
+    });
+    panel.addEventListener("mouseleave", () => {
+      gsap.to(panel, {
+        scale: 1,
+        boxShadow: "none",
+        duration: 0.25,
+      });
+    });
+  });
+
+
+  /* ── 6. SCROLL-TRIGGERED REVEAL for any content sections ─────
+     Any element with class .reveal, .section, .project etc.
+     fades + slides in as the user scrolls down.                  */
+  gsap.utils.toArray(".reveal, .project, .skill, .section, article").forEach(el => {
+    gsap.from(el, {
+      opacity: 0,
+      y: 40,
+      duration: 0.65,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: el,
+        start: "top 88%",
+        toggleActions: "play none none none",
+      },
+    });
+  });
+
+
+  /* ── 7. CURSOR DOT (optional but fits the hacker theme) ──────
+     A tiny green dot that follows the mouse like a terminal
+     cursor — feels very on-brand.                               */
+  const dot = document.createElement("div");
+  Object.assign(dot.style, {
+    position: "fixed",
+    width: "8px",
+    height: "8px",
+    background: "#00ffb4",
+    borderRadius: "50%",
+    pointerEvents: "none",
+    zIndex: "9999",
+    transform: "translate(-50%,-50%)",
+    mixBlendMode: "screen",
+  });
+  document.body.appendChild(dot);
+
+  let mx = 0, my = 0;
+  document.addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; });
+  gsap.ticker.add(() => gsap.set(dot, { x: mx, y: my }));
+
+</script>
+<!-- ====================================================== END -->
