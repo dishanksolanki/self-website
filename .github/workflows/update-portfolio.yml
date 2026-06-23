@@ -1,0 +1,31 @@
+name: Update Portfolio
+
+on:
+  repository_dispatch:
+    types: [new-repo]
+  workflow_dispatch:
+
+jobs:
+  update-portfolio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Call Gemini AI
+        id: gemini
+        run: |
+          RESPONSE=$(curl -s -X POST \
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${{ secrets.GEMINI_API_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "contents":[{
+              "parts":[{
+                "text": "I am Dishank Solanki, a BTech CSE student. I just created a new GitHub project called ${{ github.event.repository.name }}. Write 2 short professional bullet points to add to my portfolio website projects section."
+              }]
+            }]
+          }')
+          echo "GEMINI_RESPONSE=$RESPONSE" >> $GITHUB_OUTPUT
+
+      - name: Print Gemini Response
+        run: echo "${{ steps.gemini.outputs.GEMINI_RESPONSE }}"
