@@ -9,6 +9,12 @@ on:
       project_description:
         description: 'What did you build?'
         required: true
+      project_link:
+        description: 'Project Link (optional)'
+        required: false
+      project_tags:
+        description: 'Tags separated by comma (e.g. Python,AI,Flask)'
+        required: true
 
 jobs:
   update-portfolio:
@@ -26,13 +32,42 @@ jobs:
           -d "{
             \"contents\":[{
               \"parts\":[{
-                \"text\": \"I am Dishank Solanki, a BTech CSE student. I built a project called ${{ inputs.project_name }}. Description: ${{ inputs.project_description }}. Write ONLY 2 short professional bullet points for my portfolio. No extra text, just the 2 bullet points starting with bullet symbol.\"
+                \"text\": \"I am Dishank Solanki, a BTech CSE student. I built a project called ${{ inputs.project_name }}. Description: ${{ inputs.project_description }}. Write ONLY one short 1-2 sentence project description for my portfolio website. No bullet points, no extra text, just the description.\"
               }]
             }]
           }")
-          echo "response<<EOF" >> $GITHUB_OUTPUT
-          echo "$RESPONSE" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          DESC=$(echo $RESPONSE | python3 -c "import sys,json; data=json.load(sys.stdin); print(data['candidates'][0]['content']['parts'][0]['text'])" | tr -d '\n' | sed 's/"/\\"/g')
+          echo "desc=$DESC" >> $GITHUB_OUTPUT
 
-      - name: Print Response
-        run: echo "${{ steps.gemini.outputs.response }}"
+      - name: Update index.html
+        run: |
+          # Count existing projects
+          COUNT=$(grep -o 'proj-card' index.html | wc -l)
+          NEW_IDX=$(printf "%02d" $((COUNT + 1)))
+          
+          # Build tags HTML
+          TAGS=""
+          IFS=',' read -ra TAG_LIST <<< "${{ inputs.project_tags }}"
+          for tag in "${TAG_LIST[@]}"; do
+            tag=$(echo $tag | xargs)
+            TAGS="$TAGS<span class=\"ptag\">$tag</span>"
+          done
+          
+          # Build new project card
+          LINK="${{ inputs.project_link }}"
+          if [ -z "$LINK" ]; then
+            LINK="https://github.com/dishanksolanki"
+          fi
+          
+          NEW_CARD="      <div class=\"proj-card fade-up\" data-href=\"$LINK\"><div class=\"proj-idx\">$NEW_IDX<\/div><div class=\"proj-name\">${{ inputs.project_name }}<\/div><p class=\"proj-desc\">${{ steps.gemini.outputs.desc }}<\/p><div class=\"proj-footer\"><div class=\"proj-tags\">$TAGS<\/div><\/div><\/div>"
+          
+          # Insert before closing </div> of projects-grid
+          sed -i "s|</div>\s*</div>\s*</section>|$NEW_CARD\n    </div>\n  </div>\n</section>|" index.html
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add index.html
+          git commit -m "Add new project: ${{ inputs.project_name }}"
+          git push
