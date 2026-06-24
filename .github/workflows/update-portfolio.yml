@@ -36,35 +36,47 @@ jobs:
               }]
             }]
           }")
-          DESC=$(echo $RESPONSE | python3 -c "import sys,json; data=json.load(sys.stdin); print(data['candidates'][0]['content']['parts'][0]['text'])" | tr -d '\n' | sed 's/"/\\"/g')
-          echo "desc=$DESC" >> $GITHUB_OUTPUT
+          DESC=$(echo $RESPONSE | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          print(data['candidates'][0]['content']['parts'][0]['text'].strip())
+          ")
+          echo "desc<<EOF" >> $GITHUB_OUTPUT
+          echo "$DESC" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Update index.html
         run: |
-          # Count existing projects
           COUNT=$(grep -o 'proj-card' index.html | wc -l)
           NEW_IDX=$(printf "%02d" $((COUNT + 1)))
           
-          # Build tags HTML
           TAGS=""
           IFS=',' read -ra TAG_LIST <<< "${{ inputs.project_tags }}"
           for tag in "${TAG_LIST[@]}"; do
             tag=$(echo $tag | xargs)
-            TAGS="$TAGS<span class=\"ptag\">$tag</span>"
+            TAGS="${TAGS}<span class=\"ptag\">${tag}</span>"
           done
           
-          # Build new project card
           LINK="${{ inputs.project_link }}"
           if [ -z "$LINK" ]; then
             LINK="https://github.com/dishanksolanki"
           fi
           
-          NEW_CARD="      <div class=\"proj-card fade-up\" data-href=\"$LINK\"><div class=\"proj-idx\">$NEW_IDX<\/div><div class=\"proj-name\">${{ inputs.project_name }}<\/div><p class=\"proj-desc\">${{ steps.gemini.outputs.desc }}<\/p><div class=\"proj-footer\"><div class=\"proj-tags\">$TAGS<\/div><\/div><\/div>"
-          
-          # Insert before closing </div> of projects-grid
-          sed -i "s|</div>\s*</div>\s*</section>|$NEW_CARD\n    </div>\n  </div>\n</section>|" index.html
+          python3 -c "
+          content = open('index.html', encoding='utf-8').read()
+          new_card = '      <div class=\"proj-card fade-up\" data-href=\"${LINK}\"><div class=\"proj-idx\">${NEW_IDX}</div><div class=\"proj-name\">${{ inputs.project_name }}</div><p class=\"proj-desc\">${{ steps.gemini.outputs.desc }}</p><div class=\"proj-footer\"><div class=\"proj-tags\">${TAGS}</div></div></div>'
+          old = '    </div>\n  </div>\n</section>'
+          new = new_card + '\n    </div>\n  </div>\n</section>'
+          if old in content:
+              content = content.replace(old, new, 1)
+              print('SUCCESS: Project card added!')
+          else:
+              print('ERROR: Pattern not found!')
+              exit(1)
+          open('index.html', 'w', encoding='utf-8').write(content)
+          "
 
-      - name: Commit changes
+      - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
