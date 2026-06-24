@@ -2,23 +2,37 @@ name: Update Portfolio
 
 on:
   workflow_dispatch:
+    inputs:
+      project_name:
+        description: 'Project Name'
+        required: true
+      project_description:
+        description: 'What did you build?'
+        required: true
 
 jobs:
   update-portfolio:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Call Gemini AI
+        id: gemini
         run: |
-          curl -s -X POST \
+          RESPONSE=$(curl -s -X POST \
           "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${{ secrets.GEMINI_API_KEY }}" \
           -H "Content-Type: application/json" \
-          -d '{
-            "contents":[{
-              "parts":[{
-                "text": "I am Dishank Solanki, a BTech CSE student. Write 2 short professional bullet points to add to my portfolio website projects section for a new project."
+          -d "{
+            \"contents\":[{
+              \"parts\":[{
+                \"text\": \"I am Dishank Solanki, a BTech CSE student. I built a project called ${{ inputs.project_name }}. Description: ${{ inputs.project_description }}. Write ONLY 2 short professional bullet points for my portfolio. No extra text, just the 2 bullet points starting with bullet symbol.\"
               }]
             }]
-          }'
+          }")
+          echo "response<<EOF" >> $GITHUB_OUTPUT
+          echo "$RESPONSE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Print Response
+        run: echo "${{ steps.gemini.outputs.response }}"
