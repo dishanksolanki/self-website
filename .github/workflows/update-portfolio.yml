@@ -67,20 +67,35 @@ jobs:
           if [ -z "$LINK" ]; then
             LINK="https://github.com/dishanksolanki"
           fi
-          
-          python3 -c "
+
+          DESC="${{ steps.gemini.outputs.desc }}"
+          DESC=$(echo "$DESC" | tr -d '\n' | tr -d '\r' | head -c 200)
+
+          python3 << 'PYEOF'
+          import os
           content = open('index.html', encoding='utf-8').read()
-          new_card = '      <div class=\"proj-card fade-up\" data-href=\"${LINK}\"><div class=\"proj-idx\">${NEW_IDX}</div><div class=\"proj-name\">${{ inputs.project_name }}</div><p class=\"proj-desc\">${{ steps.gemini.outputs.desc }}</p><div class=\"proj-footer\"><div class=\"proj-tags\">${TAGS}</div></div></div>'
+          new_idx = os.environ['NEW_IDX']
+          project_name = os.environ['PROJECT_NAME']
+          desc = os.environ['DESC']
+          tags = os.environ['TAGS']
+          link = os.environ['LINK']
+          new_card = f'      <div class="proj-card fade-up" data-href="{link}"><div class="proj-idx">{new_idx}</div><div class="proj-name">{project_name}</div><p class="proj-desc">{desc}</p><div class="proj-footer"><div class="proj-tags">{tags}</div></div></div>'
           old = '    </div>\n  </div>\n</section>'
           new = new_card + '\n    </div>\n  </div>\n</section>'
           if old in content:
               content = content.replace(old, new, 1)
-              print('SUCCESS: Project card added!')
+              print('SUCCESS!')
           else:
               print('ERROR: Pattern not found!')
               exit(1)
           open('index.html', 'w', encoding='utf-8').write(content)
-          "
+          PYEOF
+        env:
+          NEW_IDX: ${{ env.NEW_IDX }}
+          PROJECT_NAME: ${{ inputs.project_name }}
+          DESC: ${{ steps.gemini.outputs.desc }}
+          TAGS: ${{ env.TAGS }}
+          LINK: ${{ inputs.project_link }}
 
       - name: Commit and push changes
         run: |
