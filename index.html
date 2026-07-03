@@ -1195,15 +1195,7 @@ footer span { color:var(--violet2); }
   <div class="container">
     <div class="s-label fade-up">Projects</div>
     <h2 class="s-title fade-up">Things I've <em>Built</em></h2>
-    <div class="projects-grid">
-      <div class="proj-card fade-up" data-href="https://www.linkedin.com/in/dishank-solanki-a5a5b23a5/"><div class="proj-idx">01</div><div class="proj-name">AI Chatbot</div><p class="proj-desc">AI-powered chatbot simulating intelligent conversations. Sharpened NLP, debugging, and interactive UX skills.</p><div class="proj-footer"><div class="proj-tags"><span class="ptag">Python</span><span class="ptag">AI</span></div></div></div>
-      <div class="proj-card fade-up" data-href="https://lnkd.in/dfZJhgXM"><div class="proj-idx">02</div><div class="proj-name">Hand Gesture Detection</div><p class="proj-desc">Real-time gesture recognition via webcam using OpenCV. Accurate hand tracking with computer vision pipeline.</p><div class="proj-footer"><div class="proj-tags"><span class="ptag">Python</span><span class="ptag">OpenCV</span></div><span class="proj-link">Demo →</span></div></div>
-      <div class="proj-card fade-up" data-href="https://www.linkedin.com/in/dishank-solanki-a5a5b23a5/"><div class="proj-idx">03</div><div class="proj-name">Android Application</div><p class="proj-desc">Converted a web app into a fully native Android application, enhancing cross-device accessibility.</p><div class="proj-footer"><div class="proj-tags"><span class="ptag">Android Studio</span><span class="ptag">Java</span></div></div></div>
-      <div class="proj-card fade-up" data-href="https://lnkd.in/dexEGAue"><div class="proj-idx">04</div><div class="proj-name">E-Commerce Website</div><p class="proj-desc">Fully responsive e-commerce platform with shopping cart and product listings built from scratch.</p><div class="proj-footer"><div class="proj-tags"><span class="ptag">HTML</span><span class="ptag">CSS</span><span class="ptag">JS</span></div><span class="proj-link">Live →</span></div></div>
-      <div class="proj-card fade-up" data-href="https://www.linkedin.com/in/dishank-solanki-a5a5b23a5/"><div class="proj-idx">05</div><div class="proj-name">Memory Card Game</div><p class="proj-desc">Console-based memory card game in Core Java with arrays, ArrayLists, game loops and validation.</p><div class="proj-footer"><div class="proj-tags"><span class="ptag">Java</span></div></div></div>
-      <div class="proj-card fade-up" data-href="https://www.linkedin.com/in/dishank-solanki-a5a5b23a5/"><div class="proj-idx">06</div><div class="proj-name">KBC Quiz Game</div><p class="proj-desc">Interactive KBC-style quiz with prize money ladder, answer validation, and lifelines in Python.</p><div class="proj-footer"><div class="proj-tags"><span class="ptag">Python</span></div></div></div>
-      <div class="proj-card fade-up" data-href="https://github.com/dishanksolanki"><div class="proj-idx">22</div><div class="proj-name">AI Portfolio Updater</div><p class="proj-desc">Automated portfolio website updater using GitHub Actions and Gemini AI</p><div class="proj-footer"><div class="proj-tags"><span class="ptag">GitHub Actions</span><span class="ptag">Gemini AI</span><span class="ptag">Automation</span></div></div></div>
-    </div>
+    <div class="projects-grid" id="projectsGrid"></div>
   </div>
 </section>
 
@@ -1582,4 +1574,5 @@ form.addEventListener('submit', async (e) => {
             }, 7000);
         });
     </script>
+<script src="./projects-loader.js"></script>
 </body>
