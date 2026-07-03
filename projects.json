@@ -1,0 +1,53 @@
+[
+  {
+    "name": "AI Chatbot",
+    "desc": "AI-powered chatbot simulating intelligent conversations. Sharpened NLP, debugging, and interactive UX skills.",
+    "tags": ["Python", "AI"],
+    "href": "https://www.linkedin.com/in/dishank-solanki-a5a5b23a5/"
+  },
+  {
+    "name": "Hand Gesture Detection",
+    "desc": "Real-time gesture recognition via webcam using OpenCV. Accurate hand tracking with computer vision pipeline.",
+    "tags": ["Python", "OpenCV"],
+    "href": "https://lnkd.in/dfZJhgXM",
+    "linkLabel": "Demo →"
+  },
+  {
+    "name": "Android Application",
+    "desc": "Converted a web app into a fully native Android application, enhancing cross-device accessibility.",
+    "tags": ["Android Studio", "Java"],
+    "href": "https://www.linkedin.com/in/dishank-solanki-a5a5b23a5/"
+  },
+  {
+    "name": "E-Commerce Website",
+    "desc": "Fully responsive e-commerce platform with shopping cart and product listings built from scratch.",
+    "tags": ["HTML", "CSS", "JS"],
+    "href": "https://lnkd.in/dexEGAue",
+    "linkLabel": "Live →"
+  },
+  {
+    "name": "Memory Card Game",
+    "desc": "Console-based memory card game in Core Java with arrays, ArrayLists, game loops and validation.",
+    "tags": ["Java"],
+    "href": "https://www.linkedin.com/in/dishank-solanki-a5a5b23a5/"
+  },
+  {
+    "name": "KBC Quiz Game",
+    "desc": "Interactive KBC-style quiz with prize money ladder, answer validation, and lifelines in Python.",
+    "tags": ["Python"],
+    "href": "https://www.linkedin.com/in/dishank-solanki-a5a5b23a5/"
+  },
+  {
+    "name": "AI Portfolio Updater",
+    "desc": "Automated portfolio website updater using GitHub Actions and Gemini AI.",
+    "tags": ["GitHub Actions", "Gemini AI", "Automation"],
+    "href": "https://github.com/dishanksolanki"
+  },
+  {
+    "name": "Sky Hopper",
+    "desc": "A tap-to-flap arcade game built with HTML5 Canvas, procedural Web Audio sound effects, and custom physics. Playable instantly in-browser.",
+    "tags": ["JavaScript", "HTML5 Canvas", "Game Dev"],
+    "href": "https://github.com/dishanksolanki/Sky-Hopper/blob/main/index.html",
+    "linkLabel": "Code →"
+  }
+]
