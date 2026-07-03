@@ -47,7 +47,7 @@
     "name": "Sky Hopper",
     "desc": "A tap-to-flap arcade game built with HTML5 Canvas, procedural Web Audio sound effects, and custom physics. Playable instantly in-browser.",
     "tags": ["JavaScript", "HTML5 Canvas", "Game Dev"],
-    "href": "https://github.com/dishanksolanki/Sky-Hopper/blob/main/index.html",
-    "linkLabel": "Code →"
+    "href": "sky-hopper-tawny.vercel.app",
+    "linkLabel": "Play →"
   }
 ]
