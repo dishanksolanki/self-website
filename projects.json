@@ -50,4 +50,10 @@
     "href": "https://sky-hopper-tawny.vercel.app/",
     "linkLabel": "Play →"
   }
+   {
+    "name": "MediCheck",
+    "tags": ["Expert System"],
+    "href": "https://es-pi-two.vercel.app/",
+    "linkLabel": "Live →"
+  }
 ]
