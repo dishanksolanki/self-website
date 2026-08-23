@@ -50,10 +50,11 @@
     "href": "https://sky-hopper-tawny.vercel.app/",
     "linkLabel": "Play →"
   },
-  {
-    "name": "MediCheck",
-    "tags": ["Expert System"],
-    "href": "https://es-pi-two.vercel.app/",
-    "linkLabel": "Live →"
-  }
+ {
+  "name": "MediCheck — Symptom Intake",
+  "desc": "Step-by-step symptom checker with dynamic follow-up questions and a triage engine that flags emergency / doctor / self-care guidance plus OTC medicine suggestions.",
+  "tags": ["HTML", "CSS", "JavaScript"],
+  "href": "https://es-pi-two.vercel.app/",
+  "linkLabel": "Demo →"
+}
 ]
